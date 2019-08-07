@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "584753164087",
+    "firebase_url": "https://kellypad-44055.firebaseio.com",
+    "project_id": "kellypad-44055",
+    "storage_bucket": "kellypad-44055.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584753164087:android:c018c63227368593",
+        "android_client_info": {
+          "package_name": "com.kellyparalounge.kellypad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584753164087-5m9lfocngudmn0a531qmu5aifd3s0lm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8WHd9UPOrT7dG1avkA1uEkMQcMemHqUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584753164087-5m9lfocngudmn0a531qmu5aifd3s0lm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
