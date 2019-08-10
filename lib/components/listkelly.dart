@@ -6,6 +6,8 @@ import '../components/kellyconfig.dart';
 class ListKelly extends StatefulWidget {
   ListKelly({Key key, this.title}) : super(key: key);
   final String title;
+  String selectedID;
+
 
   @override
   _ListKellyState createState() {
@@ -40,7 +42,7 @@ class _ListKellyState extends State<ListKelly> {
 
           subtitle: KellyTile(tileName :'club', sections: dept[0], ),
 
-          trailing: KellyInkWell(sectionTitle:dept[0],),
+          trailing: KellyInkWell(sectionTitle:dept[0], selectedID: widget.selectedID ),
 
           //   onTap: () {
           //   print(null);
@@ -54,7 +56,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'vip', sections: dept[1]),
-          trailing: KellyInkWell(sectionTitle:dept[1],),
+          trailing: KellyInkWell(sectionTitle:dept[1], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -68,7 +70,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName: 'outbar', sections: dept[2]),
-          trailing: KellyInkWell(sectionTitle:dept[2],),
+          trailing: KellyInkWell(sectionTitle:dept[2], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -82,7 +84,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'bbq', sections: dept[3]),
-          trailing: KellyInkWell(sectionTitle:dept[3],),
+          trailing: KellyInkWell(sectionTitle:dept[3], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -96,7 +98,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'shawama', sections: dept[4]),
-          trailing: KellyInkWell(sectionTitle:dept[4],),
+          trailing: KellyInkWell(sectionTitle:dept[4], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -110,7 +112,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'suya', sections: dept[5]),
-          trailing: KellyInkWell(sectionTitle:dept[5],),
+          trailing: KellyInkWell(sectionTitle:dept[5], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -124,7 +126,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'resturant', sections: dept[6]),
-          trailing: KellyInkWell(sectionTitle:dept[6],),
+          trailing: KellyInkWell(sectionTitle:dept[6], selectedID: widget.selectedID),
 
           //   onTap: () {
           //   print(null);
@@ -138,7 +140,7 @@ class _ListKellyState extends State<ListKelly> {
           ),
 
           subtitle: KellyTile(tileName:'smoothie', sections: dept[7]),
-          trailing: KellyInkWell(sectionTitle:dept[7],) ,
+          trailing: KellyInkWell(sectionTitle:dept[7], selectedID: widget.selectedID) ,
 
           //   onTap: () {
           //   print(null);

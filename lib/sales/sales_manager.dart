@@ -10,7 +10,7 @@ import '../stock_manager.dart';
 
 class SalesManager extends StatefulWidget {
   SalesManager({Key key, this.section}) : super(key: key);
-  String section;
+  final String section;
 
   @override
   _StateManagerState createState() {
@@ -49,7 +49,7 @@ class _StateManagerState extends State<SalesManager> {
 
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  DocumentReference dsstock;
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -83,7 +83,7 @@ class _StateManagerState extends State<SalesManager> {
                           SizedBox(height: 10.0),
                           StreamBuilder<QuerySnapshot>(
                             stream: Firestore.instance
-                                .collection('itemcollector')
+                                .collection('itemcollector').where('itemLevel', isEqualTo: 1 )
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -268,11 +268,52 @@ class _StateManagerState extends State<SalesManager> {
                                           ],
                                         ),
                                       ));
-                      
-                                      DocumentReference dsstock = Firestore
+
+                                      if(widget.section == "Club Bar"){
+                                        dsstock = Firestore
                                           .instance
                                           .collection('club')
                                           .document();
+                                      }else if(widget.section == "VIP Bar"){
+                                           dsstock = Firestore
+                                          .instance
+                                          .collection('vip')
+                                          .document();
+                                      }else if(widget.section == "Outside Bar"){
+                                        dsstock = Firestore
+                                          .instance
+                                          .collection('outbar')
+                                          .document();
+
+                                      }else if(widget.section == "Barbeque Spot"){
+                                          dsstock = Firestore
+                                          .instance
+                                          .collection('bbq')
+                                          .document();
+                                      }else if(widget.section == "Shawama/PopCorn"){
+                                        dsstock = Firestore
+                                          .instance
+                                          .collection('shawama')
+                                          .document();
+                                      }else if(widget.section == "Suya Spot"){
+                                      dsstock = Firestore
+                                          .instance
+                                          .collection('suya')
+                                          .document();
+                                      }else if (widget.section == "Resturant"){
+                                           dsstock = Firestore
+                                          .instance
+                                          .collection('resturant')
+                                          .document();
+                                      }else if(widget.section == "Smoothie/Juice"){
+                                       dsstock = Firestore
+                                          .instance
+                                          .collection('smoothie')
+                                          .document();
+                                      }else{
+                                        return null;
+                                      }
+                                     
 
                                       Map<String, dynamic> stock = {
                                         'item': section,
