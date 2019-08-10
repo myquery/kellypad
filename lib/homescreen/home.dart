@@ -8,10 +8,12 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
+ 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+    
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0.1,

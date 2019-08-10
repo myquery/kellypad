@@ -20,7 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
   cloud_firestore: ^0.7.3
-  firebase_core: ^0.2.5+1
+  firebase_core: ^0.2.5+1 
+  intl: ^0.15.8
+
   
   
 

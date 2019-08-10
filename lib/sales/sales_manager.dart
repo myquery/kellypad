@@ -6,10 +6,11 @@ import '../manager/viewrecord/view_sales.dart';
 import '../manager/model/sales_model.dart';
 
 import '../homescreen/home.dart';
+import '../stock_manager.dart';
 
 class SalesManager extends StatefulWidget {
   SalesManager({Key key, this.section}) : super(key: key);
-  final String section;
+  String section;
 
   @override
   _StateManagerState createState() {
@@ -20,6 +21,12 @@ class SalesManager extends StatefulWidget {
 
 class _StateManagerState extends State<SalesManager> {
   final List<String> sectionCat = List<String>();
+  List _items;
+
+  Map<String, dynamic> items;
+  String section;
+
+  // StockManager stock = new SalesManager()
 
   TextEditingController item = TextEditingController();
   TextEditingController openingStock = TextEditingController();
@@ -33,36 +40,30 @@ class _StateManagerState extends State<SalesManager> {
   TextEditingController closingStock = TextEditingController();
   TextEditingController totalAmount = TextEditingController();
 
+
+
   @override
   initState() {
-
-    // item = TextEditingController();
-    // openingStock = TextEditingController();
-    // addedStock = TextEditingController();
-    // totalStock = TextEditingController();
-    // soldStock = TextEditingController();
-    // unitPrice = TextEditingController();
-    // spoilage = TextEditingController();
-    // complementary = TextEditingController();
-    // itemDiscount = TextEditingController();
-    // closingStock = TextEditingController();
-    // totalAmount = TextEditingController();
     super.initState();
   }
 
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
+
     // TODO: implement build
     return Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(title: Text("Add Sales to: ${widget.section}")),
         body: Container(
             padding: EdgeInsets.all(20.0),
             child: Form(
                 key: _formKey,
+                autovalidate: true,
                 child: Card(
                     elevation: 2.0,
                     child: Container(
@@ -78,18 +79,40 @@ class _StateManagerState extends State<SalesManager> {
                           SizedBox(
                             height: 15.0,
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Add Item',
-                                contentPadding:
-                                    EdgeInsets.only(top: -20.0, bottom: 2.0),
-                              ),
-                              controller: item,
-                              keyboardType: TextInputType.text,
-                            ),
+          
+                          SizedBox(height: 10.0),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: Firestore.instance
+                                .collection('itemcollector')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Text("Please wait...");
+                              }
+
+                              return DropdownButton(
+                                items: snapshot.data.documents
+                                    .map((DocumentSnapshot documentSnapshot) {
+                                  //section = documentSnapshot.data['itemName'];
+                                  return DropdownMenuItem(
+                                    child:
+                                        Text(documentSnapshot.data['itemName']),
+                                    value: documentSnapshot.data['itemName'],
+                                  );
+                                }).toList(),
+                                value: section,
+                                onChanged: (val) {
+                                  setState(() {
+                                    section = val;
+                                  });
+                                },
+                                hint: Text("Select Item"),
+                                isExpanded: true,
+                              );
+                            },
                           ),
+
+                          SizedBox(height:15.0),
                           Expanded(
                             flex: 1,
                             child: TextField(
@@ -99,6 +122,12 @@ class _StateManagerState extends State<SalesManager> {
                                     EdgeInsets.only(top: -20.0, bottom: 2.0),
                               ),
                               controller: openingStock,
+                              onSubmitted: (value) {
+                                if (value.isEmpty) {
+                                  return 'Please enter some text';
+                                }
+                                return null;
+                              },
                               keyboardType: TextInputType.number,
                             ),
                           ),
@@ -138,7 +167,7 @@ class _StateManagerState extends State<SalesManager> {
                               keyboardType: TextInputType.number,
                             ),
                           ),
-                           Expanded(
+                          Expanded(
                             flex: 1,
                             child: TextField(
                               decoration: InputDecoration(
@@ -220,59 +249,50 @@ class _StateManagerState extends State<SalesManager> {
                                   children: <Widget>[
                                 RaisedButton(
                                   onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ViewSalesReport(),
-                                        ));
+                                    Navigator.pop(context);
                                   },
                                   child: Text('View Report'),
                                 ),
                                 RaisedButton(
                                   onPressed: () {
-                                    // Firestore.instance.runTransaction((Transaction transaction) async {
-                                    //   await transaction.update(Firestore.instance.collection('club').document(), {
-                                    //     'item': item,
-                                    //     'openingstock': openingStock.text,
-                                    //     'addedstock': addedStock,
-                                    //     'totalstock' : totalStock,
-                                    //     'soldstock' : soldStock,
-                                    //     'unitprice' : unitPrice,
-                                    //     'spoilage': spoilage,
-                                    //     'complementary': complementary,
-                                    //     'itemdiscount': itemDiscount,
-                                    //     'closingStock': closingStock,
-                                    //     'totalamount': totalAmount
-                                    //   });
+                                    // checkItem();
+                                    // return;
+                                    //if (_formKey.currentState.validate()) {
+                                      _scaffoldKey.currentState
+                                          .showSnackBar(new SnackBar(
+                                        duration: new Duration(seconds: 4),
+                                        content: new Row(
+                                          children: <Widget>[
+                                            new CircularProgressIndicator(),
+                                            new Text(" Adding Stock...")
+                                          ],
+                                        ),
+                                      ));
+                      
+                                      DocumentReference dsstock = Firestore
+                                          .instance
+                                          .collection('club')
+                                          .document();
 
-                                    // });
-                                    DocumentReference dsstock = Firestore
-                                        .instance
-                                        .collection('club')
-                                        .document();
-                              
-                                    Map<String, dynamic> stock = {
-                                      'item': item.text,
-                                      'openingstock': openingStock.text,
-                                      'addedstock': addedStock.text,
-                                      'totalstock': totalStock.text,
-                                      'soldstock': soldStock.text,
-                                      'unitprice': unitPrice.text,
-                                      'spoilage': spoilage.text,
-                                      'complementary': complementary.text,
-                                      'itemdiscount': itemDiscount.text,
-                                      'closingStock': closingStock.text,
-                                      'totalamount': totalAmount.text,
-                                      'dateadded': now
-                                    };
-                                    dsstock
-                                        .setData(stock)
-                                        .whenComplete(() {
-                                      print("Stock Added...");
-                                    }).catchError((e) {
-                                      print(e);
-                                    });
+                                      Map<String, dynamic> stock = {
+                                        'item': section,
+                                        'openingstock': openingStock.text,
+                                        'addedstock': addedStock.text,
+                                        'totalstock': totalStock.text,
+                                        'soldstock': soldStock.text,
+                                        'unitprice': unitPrice.text,
+                                        'spoilage': spoilage.text,
+                                        'complementary': complementary.text,
+                                        'itemdiscount': itemDiscount.text,
+                                        'closingStock': closingStock.text,
+                                        'totalamount': totalAmount.text,
+                                        'dateadded': now
+                                      };
+                                      //if (stock.length < 0) return;
+                                      dsstock.setData(stock).whenComplete(() {
+                                        Navigator.pop(context);
+                                      });
+                                    //}
                                   },
                                   child: Text('Submit Report'),
                                 )
