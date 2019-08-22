@@ -21,6 +21,33 @@ class ViewSalesReport extends StatefulWidget {
 }
   
 class _ViewSalesReportState extends State<ViewSalesReport>{
+
+  String collections;
+  @override
+  initState() {
+
+     if(widget.section == "Club Bar"){
+     collections = 'club';
+    }else if(widget.section == "VIP Bar"){
+      collections = 'vip';
+    }else if(widget.section == "Outside Bar"){
+      collections = 'outbar';
+    }else if(widget.section == "Barbeque Spot"){
+      collections = 'bbq';
+    }else if(widget.section == "Shawama/PopCorn" ){
+      collections = 'shawama';
+    }else if(widget.section == "Suya Spot"){
+      collections = 'suya';
+    }else if(widget.section == "Resturant"){
+      collections = 'resturant';
+    }else if(widget.section == "Smoothie/Juice"){
+      collections = 'smoothie';
+    }else{
+      collections = "";
+    }
+    
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     // DateTime now = DateTime.now();
@@ -30,6 +57,10 @@ class _ViewSalesReportState extends State<ViewSalesReport>{
     // switch(){
     //   case pageroutes.:
     // }
+
+    
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +72,7 @@ class _ViewSalesReportState extends State<ViewSalesReport>{
           padding: const EdgeInsets.all(10.0),
           child: StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
-                .collection('club')
+                .collection(collections)
                 .orderBy('dateadded', descending: true )
                 .snapshots(),
             builder:

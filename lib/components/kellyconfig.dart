@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
-import '../manager/page_switch.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+//import '../manager/page_switch.dart';
 
 class KellyInkWell extends StatefulWidget {
   final String sectionTitle;
-  String selectedID;
+  final String selectedID;
 
   KellyInkWell({this.sectionTitle, this.selectedID});
   @override
@@ -18,9 +19,10 @@ class _KellyInkWellState extends State<KellyInkWell> {
   // TextEditingController items = TextEditingController();
   // int itemLevel;
   //List sectionItems = ['Sales', 'Expenses', 'Inventory'];
-
+ 
   Stream<QuerySnapshot> itemdoc =
       Firestore.instance.collection('itemcollector').snapshots();
+      
 
   String section = 'Sales';
   String result = '';
@@ -74,6 +76,7 @@ class MyDialog extends StatefulWidget {
 
 class MyDialogState extends State<MyDialog> {
   String _selectedId;
+   bool _saving = false;
   TextEditingController items = TextEditingController();
   TextEditingController itemprice = TextEditingController();
   int itemLevel;
@@ -103,6 +106,7 @@ class MyDialogState extends State<MyDialog> {
   }
 
   addItemRecord() {
+    _saving = true;
     returnSectionTag();
 
     DocumentReference addItem =
@@ -113,6 +117,8 @@ class MyDialogState extends State<MyDialog> {
       'itemLevel': itemLevel
     };
     addItem.setData(deptitem);
+     _saving = false;
+     Navigator.of(context, rootNavigator: true).pop();
   }
   @override
   void initState() {
@@ -128,11 +134,13 @@ class MyDialogState extends State<MyDialog> {
   }
 
   Widget build(BuildContext context) {
-    return AlertDialog(
+   
+    return ModalProgressHUD(
+      child: AlertDialog(
                 title: Text(widget.sectionTitle),
                 //content: Text('random text'),
                 content: Container(
-                    height: 150.0,
+                    height: 200.0,
                     child: Column(
                       children: <Widget>[
                         DropdownButton<String>(
@@ -149,7 +157,7 @@ class MyDialogState extends State<MyDialog> {
                           }).toList(),
                         ),
                         SizedBox(
-                          height: 10.0,
+                          height: 15.0,
                         ),
                         TextField(
                           decoration: InputDecoration(
@@ -158,17 +166,32 @@ class MyDialogState extends State<MyDialog> {
                                 EdgeInsets.only(top: -20.0, bottom: 2.0),
                           ),
                           controller: items,
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
-                          height: 10.0,
+                          height: 20.0,
+                        ),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Set Price',
+                            contentPadding:
+                                EdgeInsets.only(top: -20.0, bottom: 2.0),
+                          ),
+                          controller: itemprice,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                         SizedBox(
+                          height: 20.0,
                         ),
                         RaisedButton(
                           onPressed: () {
                             addItemRecord();
+                           
                           },
                           child: Text('Add Item'),
                         )
                       ],
-                    )));  
+                    ))), inAsyncCall: _saving, progressIndicator: CircularProgressIndicator());  
   }
 }

@@ -22,6 +22,7 @@ dependencies:
   cloud_firestore: ^0.7.3
   firebase_core: ^0.2.5+1 
   intl: ^0.15.8
+  modal_progress_hud: ^0.1.3
 
   
   
