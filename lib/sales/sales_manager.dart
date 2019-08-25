@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 import '../manager/viewrecord/view_sales.dart';
 import '../manager/model/sales_model.dart';
@@ -22,28 +22,28 @@ class SalesManager extends StatefulWidget {
 
 class _StateManagerState extends State<SalesManager> {
   final List<String> sectionCat = List<String>();
-  //List _items;
 
-  int sotckLevel;
+  QuerySnapshot result;
+
   int stockPrice;
   String stockName;
 
   String doc;
 
+  String department;
+
   Map<String, dynamic> items;
   String section;
   int itemLevel;
 
-final now = DateTime.now();
- //final yesterday = DateTime(now.year, now.month, now.day - 1);
+  //bool _validate = false;
+
+  final now = DateTime.now();
+  var _focusNode = new FocusNode();
+  var nodeComplement = new FocusNode();
+  //final yesterday = DateTime(now.year, now.month, now.day - 1);
 
   //form variables
-
-  String _totalStock;
-
-  FireService fireService = new FireService();
-
-  // StockManager stock = new SalesManager()
 
   TextEditingController item = TextEditingController();
   TextEditingController openingStock = TextEditingController();
@@ -57,18 +57,20 @@ final now = DateTime.now();
   TextEditingController closingStock = TextEditingController();
   TextEditingController totalAmount = TextEditingController();
 
-
 //method to get the price of item selected
-
-
-getLastOpeningStock(stock) async {
- final QuerySnapshot result = await Firestore.instance
-        .collection('itemcollector')
-        .where('itemName', isEqualTo: doc)
+  DateTime yesterday;
+  getLastClosingStock(stock, collection) async {
+    result = await Firestore.instance
+        .collection(collection)
+        .where('item', isEqualTo: stock)
         .getDocuments();
 
     final List<DocumentSnapshot> documents = result.documents;
-}
+    documents.forEach((f) {
+      openingStock.text = f.data['closingStock'];
+    });
+  }
+
   getDoc(doc) async {
     final QuerySnapshot result = await Firestore.instance
         .collection('itemcollector')
@@ -79,13 +81,12 @@ getLastOpeningStock(stock) async {
 
     documents.forEach((f) {
       if (doc == f.data['itemName']) {
+        //return
         //initial value for item selected
         unitPrice.text = f.data['itemPrice'];
-        //Firestore.instance.collection(path)
       }
     });
   }
-
 
 // getDate(){
 // final now = DateTime.now();
@@ -113,32 +114,57 @@ getLastOpeningStock(stock) async {
 // }
   @override
   initState() {
+    print(now.subtract(Duration(days: 3)));
+    print(now.day - 1);
     if (widget.section == "Club Bar") {
       itemLevel = 1;
+      department = "club";
     } else if (widget.section == "VIP Bar") {
       itemLevel = 2;
+      department = "vip";
     } else if (widget.section == "Outside Bar") {
       itemLevel = 3;
+      department = "outbar";
     } else if (widget.section == "Barbeque Spot") {
       itemLevel = 4;
+      department = "bbq";
     } else if (widget.section == "Shawama/PopCorn") {
       itemLevel = 5;
+      department = "shawama";
     } else if (widget.section == "Suya Spot") {
       itemLevel = 6;
+      department = "suya";
     } else if (widget.section == "Resturant") {
       itemLevel = 7;
+      department = "resturant";
     } else if (widget.section == "Smoothie/Juice") {
       itemLevel = 8;
+      department = "smoothie";
     } else {
       itemLevel = 0;
     }
 
     super.initState();
     setState(() {
-      //getDoc();
-      fireService.getData().then((value) {
-        print(value);
-      });
+      yesterday = DateTime(now.year, now.month, now.day - 1);
+      print(yesterday);
+    });
+
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        // TextField has lost focus
+        var sold = int.parse(soldStock.text).toInt();
+        var price = int.parse(unitPrice.text).toInt();
+        var total = sold * price;
+        totalAmount.text = total.toString();
+      }
+    });
+    nodeComplement.addListener((){
+        var spoil = int.parse(spoilage.text).toInt();
+        var complement = int.parse(complementary.text).toInt();
+         var sold = int.parse(soldStock.text).toInt();
+        var total = spoil + complement + sold;
+        closingStock.text = total.toString();
     });
   }
 
@@ -171,7 +197,7 @@ getLastOpeningStock(stock) async {
                           SizedBox(
                             height: 15.0,
                           ),
-                          Text(stockPrice.toString()),
+                          //Text(stockPrice.toString()),
                           Text('Add Daily Sales of ${widget.section}',
                               style:
                                   new TextStyle(fontWeight: FontWeight.bold)),
@@ -202,9 +228,17 @@ getLastOpeningStock(stock) async {
                                 }).toList(),
                                 value: section,
                                 onChanged: (val) {
+                                  // Center(
+                                  //     child: SizedBox(
+                                  //       child: CircularProgressIndicator(),
+                                  //       height: 20.0,
+                                  //       width: 20.0,
+                                  // ));
+                                  //getLastClosingStock(val, widget.section);
                                   setState(() {
                                     section = val;
                                     getDoc(section);
+                                    getLastClosingStock(section, department);
                                   });
                                 },
                                 hint: Text("Select Item"),
@@ -220,6 +254,8 @@ getLastOpeningStock(stock) async {
                                 labelText: 'Add Opening Stock',
                                 contentPadding:
                                     EdgeInsets.only(top: -20.0, bottom: 3.0),
+
+                                //return
                               ),
                               controller: openingStock,
                               onSubmitted: (value) {
@@ -231,7 +267,7 @@ getLastOpeningStock(stock) async {
                               keyboardType: TextInputType.number,
                             ),
                           ),
-                           SizedBox(height: 10.0),
+                          SizedBox(height: 10.0),
                           Expanded(
                             flex: 1,
                             child: TextField(
@@ -254,9 +290,12 @@ getLastOpeningStock(stock) async {
                                     EdgeInsets.only(top: -20.0, bottom: 2.0),
                               ),
                               controller: totalStock,
-                             onTap: (){
-                               print(openingStock.text);
-                             },
+                              onTap: () {
+                                var open = int.parse(openingStock.text).toInt();
+                                var add = int.parse(addedStock.text).toInt();
+                                var total = open + add;
+                                totalStock.text = total.toString();
+                              },
                               keyboardType: TextInputType.number,
                             ),
                           ),
@@ -277,6 +316,7 @@ getLastOpeningStock(stock) async {
                           Expanded(
                             flex: 1,
                             child: TextField(
+                              focusNode: _focusNode,
                               decoration: InputDecoration(
                                 labelText: 'Sold Stock ',
                                 contentPadding:
@@ -303,6 +343,7 @@ getLastOpeningStock(stock) async {
                           Expanded(
                             flex: 1,
                             child: TextField(
+                              focusNode: nodeComplement,
                               decoration: InputDecoration(
                                 labelText: 'Total Complementary',
                                 contentPadding:
@@ -342,14 +383,19 @@ getLastOpeningStock(stock) async {
                           Expanded(
                             flex: 1,
                             child: TextField(
-                              decoration: InputDecoration(
-                                labelText: 'Total Amount Sold',
-                                contentPadding:
-                                    EdgeInsets.only(top: -20.0, bottom: 2.0),
-                              ),
-                              controller: totalAmount,
-                              keyboardType: TextInputType.number,
-                            ),
+                                decoration: InputDecoration(
+                                  labelText: 'Total Amount Sold',
+                                  contentPadding:
+                                      EdgeInsets.only(top: -20.0, bottom: 2.0),
+                                ),
+                                controller: totalAmount,
+                                keyboardType: TextInputType.number,
+                                onTap: () {
+                                  var sold = int.parse(soldStock.text).toInt();
+                                  var price = int.parse(unitPrice.text).toInt();
+                                  var total = sold * price;
+                                  totalAmount.text = total.toString();
+                                }),
                           ),
                           SizedBox(
                             height: 15.0,
